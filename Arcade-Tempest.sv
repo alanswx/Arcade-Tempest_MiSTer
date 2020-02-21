@@ -89,17 +89,15 @@ wire [7:0] m_dip = {1'b0,1'b0,status[8],status[9],~status[10],1'b1,status[11],st
 
 ////////////////////   CLOCKS   ///////////////////
 
-wire clk_6, clk_25,clk_24,clk_96;
+wire clk_6, clk_25,clk_96;
 wire pll_locked;
 
 pll pll
 (
 	.refclk(CLK_50M),
 	.rst(0),
-	.outclk_0(clk_6),	
+	.outclk_0(clk_96),	
 	.outclk_1(clk_25),	
-	.outclk_3(clk_24),	
-	.outclk_2(clk_96),	
 	.locked(pll_locked)
 );
 
@@ -215,14 +213,14 @@ arcade_fx #(640,9) arcade_video
 */
 wire ce_vid = 1; 
 wire hs, vs;
-wire [2:0] r,g;
-wire [2:0] b;
+wire [3:0] r,g;
+wire [3:0] b;
 
 assign VGA_CLK  = clk_25; 
 assign VGA_CE   = ce_vid;
-assign VGA_R    = {r,r,r[2:1]};
-assign VGA_G    = {g,g,g[2:1]};
-assign VGA_B    = {b,b,b[2:1]};
+assign VGA_R    = {r,r};
+assign VGA_G    = {g,g};
+assign VGA_B    = {b,b};
 assign VGA_HS   = ~hs;
 assign VGA_VS   = ~vs;
 assign VGA_DE   = vgade;
@@ -258,7 +256,16 @@ tempest_top tempest_top(
 .Enable(),
 .VGGO_n(),
 .Din_MB(),
-.Dout_MB()
+.Dout_MB(),
+
+        .VIDEO_R_OUT(r),
+        .VIDEO_G_OUT(g),
+        .VIDEO_B_OUT(b),
+        .HSYNC_OUT(hs),
+        .VSYNC_OUT(vs),
+        .VGA_DE(vgade),
+        .VID_HBLANK(hblank),
+        .VID_VBLANK(vblank),
 );
 							
 							/*
