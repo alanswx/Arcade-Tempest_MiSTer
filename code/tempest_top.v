@@ -21,7 +21,16 @@ module tempest_top( 	clk_96MHz,
 							Enable,
 							VGGO_n,
 							Din_MB,
-							Dout_MB
+							Dout_MB,
+	VIDEO_R_OUT,
+	VIDEO_G_OUT,
+	VIDEO_B_OUT,
+
+	HSYNC_OUT,
+	VSYNC_OUT,
+	VGA_DE,
+	VID_HBLANK,
+	VID_VBLANK
 							);
 
 	// Clock Signals						
@@ -35,6 +44,19 @@ module tempest_top( 	clk_96MHz,
 	wire Phi_2;
 	wire clk_3kHz;
 	output wire Enable;
+
+	output wire [3:0] VIDEO_R_OUT;
+	output wire [3:0] VIDEO_G_OUT;
+	output wire [3:0] VIDEO_B_OUT;
+
+	output wire HSYNC_OUT;
+	output wire VSYNC_OUT;
+	output wire VGA_DE;
+	output wire VID_HBLANK;
+	output wire VID_VBLANK;
+
+
+
 
 	
 	// 6502	
@@ -206,4 +228,26 @@ Schematic_3B				MB(
 									 
 									 );
 
+wire [2:0] rgb = DVY_out[2:0];									
+ bwidow_dw bwidow_dw (
+    .RESET(~RESET_n),
+    .clk_50(clk_96MHz),
+    .clk_12(clk_6MHz),
+    .X_VECTOR({~DVX_out[12],DVX_out[11:3]}),
+    .Y_VECTOR({~DVY_out[12],DVY_out[11:3]}),
+    .Z_VECTOR(linscale),
+    .RGB(rgb),
+    //.BEAM_ENA(clk_1500kHz),
+    .BEAM_ENA(Enable),
+    .BEAM_ON(rgb[0]||rgb[1]||rgb[2]),
+    .VIDEO_R_OUT(VIDEO_R_OUT),
+    .VIDEO_G_OUT(VIDEO_G_OUT),
+    .VIDEO_B_OUT(VIDEO_B_OUT),
+    .HSYNC_OUT(HSYNC_OUT),
+    .VSYNC_OUT(VSYNC_OUT),
+    .VID_DE(VGA_DE),
+    .VID_HBLANK(VID_HBLANK),
+    .VID_VBLANK(VID_VBLANK),
+      ); 
+									 
 endmodule 
